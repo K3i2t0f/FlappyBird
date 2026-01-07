@@ -8,7 +8,69 @@
         Title="MainWindow" Height="450" Width="800">
     <Grid>
         <Canvas>
-           
+            <Canvas.Background>
+                <ImageBrush ImageSource="/hatter.png"/>
+            </Canvas.Background>
+            <Rectangle Height="354" Canvas.Left="199" Canvas.Top="275" Width="95" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/bambusz.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Height="354" Canvas.Left="199" Canvas.Top="-160" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="180"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/bambusz.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Height="354" Canvas.Left="690" Canvas.Top="188" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/bambusz.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Height="354" Canvas.Left="450" Canvas.Top="335" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/bambusz.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Height="354" Canvas.Left="450" Canvas.Top="-102" Width="95" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="180"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/bambusz.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Height="354" Canvas.Left="690" Canvas.Top="-259" Width="95" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Top">
+                <Rectangle.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform/>
+                        <RotateTransform Angle="180"/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Rectangle.RenderTransform>
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/bambusz.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+            <Rectangle Height="70" Canvas.Left="82" Canvas.Top="217" Width="68" RenderTransformOrigin="0.458,0.524" HorizontalAlignment="Left" VerticalAlignment="Center">
+                <Rectangle.Fill>
+                    <ImageBrush ImageSource="/dobocsillag2.png"/>
+                </Rectangle.Fill>
+            </Rectangle>
+
         </Canvas>
 
     </Grid>
