@@ -8,4 +8,18 @@
     <UseWPF>true</UseWPF>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="bambusz.png" />
+    <None Remove="dobocsillag.png" />
+    <None Remove="dobocsillag2.png" />
+    <None Remove="hatter.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="bambusz.png" />
+    <Resource Include="dobocsillag.png" />
+    <Resource Include="dobocsillag2.png" />
+    <Resource Include="hatter.png" />
+  </ItemGroup>
+
 </Project>
