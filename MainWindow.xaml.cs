@@ -26,57 +26,76 @@ namespace FlappyBird
         Rectangle[] topPipes;
         Rectangle[] bottomPipes;
 
+        bool[] pipeScored = new bool[3];
+
         Random rnd = new Random();
 
         bool gameStarted = false;
         bool isGameOver = false;
+        bool waitingForRestart = false;
+
+        int score = 0;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            topPipes = new Rectangle[] { PipeTop1, PipeTop2, PipeTop3 };
-            bottomPipes = new Rectangle[] { PipeBottom1, PipeBottom2, PipeBottom3 };
+            topPipes = new Rectangle[]
+            {
+                PipeTop1, PipeTop2, PipeTop3
+            };
+
+            bottomPipes = new Rectangle[]
+            {
+                PipeBottom1, PipeBottom2, PipeBottom3
+            };
 
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
 
             ResetGame();
 
-            // biztos fókusz a Canvas-ra, hogy a KeyDown működjön
-            this.Loaded += (_, __) => GameCanvas.Focus();
+            Loaded += (_, __) => GameCanvas.Focus();
         }
 
+        // TELJES RESET (indításkor és restartnál)
         private void ResetGame()
         {
             gameTimer.Stop();
 
             gameStarted = false;
             isGameOver = false;
+            waitingForRestart = false;
+
             birdVelocity = 0;
+
+            score = 0;
+            ScoreText.Text = "0";
 
             Canvas.SetTop(Bird, 217);
 
-            RestartButton.Visibility = Visibility.Visible; // gomb mindig látszik, ezzel indítunk
+            GameOverPanel.Visibility = Visibility.Collapsed;
 
             for (int i = 0; i < 3; i++)
             {
                 Canvas.SetLeft(topPipes[i], 800 + i * 250);
                 Canvas.SetLeft(bottomPipes[i], 800 + i * 250);
+
+                pipeScored[i] = false;
                 ResetPipe(i);
             }
         }
 
+        // Játék elindítása
         private void StartGame()
         {
             gameStarted = true;
             isGameOver = false;
-            birdVelocity = 0; // induláskor nem ugrik
+            birdVelocity = 0;
             gameTimer.Start();
-
-            RestartButton.Visibility = Visibility.Collapsed; // elindításkor eltűnik a gomb
         }
 
+        // Fő játék ciklus
         private void GameLoop(object sender, EventArgs e)
         {
             if (!gameStarted)
@@ -86,28 +105,50 @@ namespace FlappyBird
             birdVelocity += gravity;
             Canvas.SetTop(Bird, Canvas.GetTop(Bird) + birdVelocity);
 
-            // Csövek mozgatása
             for (int i = 0; i < 3; i++)
             {
+                // Csövek mozgatása
                 Canvas.SetLeft(topPipes[i], Canvas.GetLeft(topPipes[i]) - pipeSpeed);
                 Canvas.SetLeft(bottomPipes[i], Canvas.GetLeft(bottomPipes[i]) - pipeSpeed);
 
+                // Cső visszarakása jobbra
                 if (Canvas.GetLeft(topPipes[i]) < -100)
                 {
-                    Canvas.SetLeft(topPipes[i], 800);
-                    Canvas.SetLeft(bottomPipes[i], 800);
+                    double maxX = 0;
+                    for (int j = 0; j < 3; j++)
+                        maxX = Math.Max(maxX, Canvas.GetLeft(topPipes[j]));
+
+                    Canvas.SetLeft(topPipes[i], maxX + 250);
+                    Canvas.SetLeft(bottomPipes[i], maxX + 250);
+
+                    pipeScored[i] = false;
                     ResetPipe(i);
                 }
 
+                // Pontozás
+                if (!pipeScored[i] &&
+                    Canvas.GetLeft(topPipes[i]) + topPipes[i].Width <
+                    Canvas.GetLeft(Bird))
+                {
+                    score++;
+                    ScoreText.Text = score.ToString();
+                    pipeScored[i] = true;
+                }
+
+                // Ütközés
                 CheckCollision(topPipes[i]);
                 CheckCollision(bottomPipes[i]);
             }
 
-            // Madár képernyőn kívül
-            if (Canvas.GetTop(Bird) < 0 || Canvas.GetTop(Bird) + Bird.Height > 450)
+            // Fent vagy lent kiesés
+            if (Canvas.GetTop(Bird) < 0 ||
+                Canvas.GetTop(Bird) + Bird.Height > 450)
+            {
                 GameOver();
+            }
         }
 
+        // Csövek magasság + rés
         private void ResetPipe(int index)
         {
             int gap = rnd.Next(130, 180);
@@ -116,21 +157,21 @@ namespace FlappyBird
             topPipes[index].Height = topHeight;
             bottomPipes[index].Height = 450 - (topHeight + gap);
 
-            // Felső cső a Canvas tetején
             Canvas.SetTop(topPipes[index], 0);
             Canvas.SetTop(bottomPipes[index], topHeight + gap);
         }
 
+        // Ütközés ellenőrzés
         private void CheckCollision(Rectangle pipe)
         {
             if (isGameOver)
                 return;
 
             Rect birdRect = new Rect(
-                Canvas.GetLeft(Bird),
-                Canvas.GetTop(Bird),
-                Bird.Width,
-                Bird.Height);
+                Canvas.GetLeft(Bird)+14,
+                Canvas.GetTop(Bird)+14,
+                Bird.Width-28,
+                Bird.Height-28);
 
             Rect pipeRect = new Rect(
                 Canvas.GetLeft(pipe),
@@ -142,6 +183,7 @@ namespace FlappyBird
                 GameOver();
         }
 
+        // Játék vége
         private void GameOver()
         {
             if (isGameOver)
@@ -149,28 +191,38 @@ namespace FlappyBird
 
             isGameOver = true;
             gameStarted = false;
+            waitingForRestart = true;
+
             gameTimer.Stop();
 
-            RestartButton.Visibility = Visibility.Visible; // halál után újra látszik a gomb
+            FinalScoreText.Text = $"Pontszám: {score}";
+            GameOverPanel.Visibility = Visibility.Visible;
         }
 
-        // SPACE ugrás közben
+        // SPACE kezelés
         private void Canvas_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!gameStarted)
+            // Halál után SPACE teljesen tiltva
+            if (waitingForRestart)
                 return;
 
-            if (e.Key == Key.Space)
+            if (e.Key != Key.Space)
+                return;
+
+            if (!gameStarted)
             {
-                birdVelocity = -10; // ugrás
+                StartGame();
+                birdVelocity = -10;
+                return;
             }
+
+            birdVelocity = -10;
         }
 
-        // Újraindító gomb
+        // Restart gomb
         private void RestartButton_Click(object sender, RoutedEventArgs e)
         {
             ResetGame();
-            StartGame();
         }
     }
 }

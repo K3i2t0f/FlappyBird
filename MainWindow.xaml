@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:FlappyBird"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="FlappyBird" Height="450" Width="800">
     <Window.Resources>
         <ImageBrush x:Key="BackgroundBrush" ImageSource="/FlappyBird;component/hatter.png" />
         <ImageBrush x:Key="PipeBrush" ImageSource="/FlappyBird;component/bambusz.png" />
@@ -16,90 +16,110 @@
                 Focusable="True"
                 KeyDown="Canvas_KeyDown">
 
+            <!-- HÁTTÉR -->
             <Canvas.Background>
                 <ImageBrush ImageSource="/hatter.png"/>
             </Canvas.Background>
 
+            <!-- FUTÓ PONTSZÁM -->
+            <TextBlock x:Name="ScoreText"
+                       Text="0"
+                       FontSize="36"
+                       FontWeight="Bold"
+                       Foreground="White"
+                       Canvas.Left="380"
+                       Canvas.Top="20"/>
 
-            <Rectangle x:Name="PipeBottom1" Height="354" Canvas.Left="199" Canvas.Top="275" Width="95" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <!-- ====== CSÖVEK – VÁLTOZTATÁS NÉLKÜL ====== -->
+
+            <!-- ALSÓ -->
+            <Rectangle x:Name="PipeBottom1" Width="95">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
-            
-            <Rectangle x:Name="PipeBottom2" Height="354" Canvas.Left="450" Canvas.Top="335" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Rectangle x:Name="PipeBottom2" Width="95">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
-            
-            <Rectangle x:Name="PipeBottom3" Height="354" Canvas.Left="690" Canvas.Top="188" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top">
+            <Rectangle x:Name="PipeBottom3" Width="95">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
-           
 
-            <Rectangle x:Name="PipeTop1" Height="354" Canvas.Left="199" Canvas.Top="-160" Width="95" HorizontalAlignment="Left" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5">
+            <!-- FELSŐ (180° FORGATVA – EZ FONTOS!) -->
+            <Rectangle x:Name="PipeTop1" Width="95" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="180"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
+                    <RotateTransform Angle="180"/>
                 </Rectangle.RenderTransform>
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
-            
-            
-            <Rectangle x:Name="PipeTop2" Height="354" Canvas.Left="450" Canvas.Top="-102" Width="95" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+            <Rectangle x:Name="PipeTop2" Width="95" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="180"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
+                    <RotateTransform Angle="180"/>
                 </Rectangle.RenderTransform>
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
-            
-            
-            <Rectangle x:Name="PipeTop3" Height="354" Canvas.Left="690" Canvas.Top="-259" Width="95" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Left" VerticalAlignment="Top">
+
+            <Rectangle x:Name="PipeTop3" Width="95" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform/>
-                        <RotateTransform Angle="180"/>
-                        <TranslateTransform/>
-                    </TransformGroup>
+                    <RotateTransform Angle="180"/>
                 </Rectangle.RenderTransform>
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
-            
-            
-            <Rectangle x:Name="Bird" Height="70" Canvas.Left="82" Canvas.Top="217" Width="68" RenderTransformOrigin="0.458,0.524" HorizontalAlignment="Left" VerticalAlignment="Center">
+
+            <!-- MADÁR -->
+            <Rectangle x:Name="Bird"
+                       Width="68"
+                       Height="70"
+                       Canvas.Left="82"
+                       Canvas.Top="217">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/dobocsillag2.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
+            <!-- ===== GAME OVER UI (RÁTEGELVE) ===== -->
+            <Border x:Name="GameOverPanel"
+                    Visibility="Collapsed"
+                    Canvas.Left="250"
+                    Canvas.Top="140"
+                    Width="300"
+                    Background="#AA000000"
+                    CornerRadius="15"
+                    Padding="20">
 
-            <Button x:Name="RestartButton"
-                Content="Restart"
-                Width="90" Height="32"
-                Canvas.Right="10" Canvas.Top="10"
-                Visibility="Collapsed"
-                Click="RestartButton_Click" />
+                <StackPanel>
+                    <TextBlock x:Name="FinalScoreText"
+                               Text="Pontszám: 0"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="White"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,15"/>
+
+                    <Button x:Name="RestartButton"
+                            Content="Újraindítás"
+                            FontSize="18"
+                            Padding="10"
+                            Background="#FF4CAF50"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Cursor="Hand"
+                            Click="RestartButton_Click"/>
+                </StackPanel>
+            </Border>
 
         </Canvas>
 
