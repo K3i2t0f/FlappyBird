@@ -12,6 +12,8 @@
         <ImageBrush x:Key="BirdBrush" ImageSource="/FlappyBird;component/dobocsillag2.png" />
     </Window.Resources>
     <Grid>
+
+        <!-- ================= JÁTÉK ================= -->
         <Canvas x:Name="GameCanvas"
                 Focusable="True"
                 KeyDown="Canvas_KeyDown">
@@ -21,38 +23,37 @@
                 <ImageBrush ImageSource="/hatter.png"/>
             </Canvas.Background>
 
-            <!-- FUTÓ PONTSZÁM -->
+            <!-- SCORE -->
             <TextBlock x:Name="ScoreText"
                        Text="0"
                        FontSize="36"
                        FontWeight="Bold"
                        Foreground="White"
                        Canvas.Left="380"
-                       Canvas.Top="20"/>
+                       Canvas.Top="20"
+                       Visibility="Collapsed"/>
 
-            <!-- ====== CSÖVEK – VÁLTOZTATÁS NÉLKÜL ====== -->
-
-            <!-- ALSÓ -->
-            <Rectangle x:Name="PipeBottom1" Width="95">
+            <!-- ALSÓ CSÖVEK -->
+            <Rectangle x:Name="PipeBottom1" Width="95" Visibility="Collapsed">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
-            <Rectangle x:Name="PipeBottom2" Width="95">
+            <Rectangle x:Name="PipeBottom2" Width="95" Visibility="Collapsed">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
-            <Rectangle x:Name="PipeBottom3" Width="95">
+            <Rectangle x:Name="PipeBottom3" Width="95" Visibility="Collapsed">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/bambusz.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
-            <!-- FELSŐ (180° FORGATVA – EZ FONTOS!) -->
-            <Rectangle x:Name="PipeTop1" Width="95" RenderTransformOrigin="0.5,0.5">
+            <!-- FELSŐ CSÖVEK -->
+            <Rectangle x:Name="PipeTop1" Width="95" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <RotateTransform Angle="180"/>
                 </Rectangle.RenderTransform>
@@ -61,7 +62,7 @@
                 </Rectangle.Fill>
             </Rectangle>
 
-            <Rectangle x:Name="PipeTop2" Width="95" RenderTransformOrigin="0.5,0.5">
+            <Rectangle x:Name="PipeTop2" Width="95" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <RotateTransform Angle="180"/>
                 </Rectangle.RenderTransform>
@@ -70,7 +71,7 @@
                 </Rectangle.Fill>
             </Rectangle>
 
-            <Rectangle x:Name="PipeTop3" Width="95" RenderTransformOrigin="0.5,0.5">
+            <Rectangle x:Name="PipeTop3" Width="95" Visibility="Collapsed" RenderTransformOrigin="0.5,0.5">
                 <Rectangle.RenderTransform>
                     <RotateTransform Angle="180"/>
                 </Rectangle.RenderTransform>
@@ -84,13 +85,14 @@
                        Width="68"
                        Height="70"
                        Canvas.Left="82"
-                       Canvas.Top="217">
+                       Canvas.Top="217"
+                       Visibility="Collapsed">
                 <Rectangle.Fill>
                     <ImageBrush ImageSource="/dobocsillag2.png"/>
                 </Rectangle.Fill>
             </Rectangle>
 
-            <!-- ===== GAME OVER UI (RÁTEGELVE) ===== -->
+            <!-- GAME OVER PANEL -->
             <Border x:Name="GameOverPanel"
                     Visibility="Collapsed"
                     Canvas.Left="250"
@@ -101,9 +103,16 @@
                     Padding="20">
 
                 <StackPanel>
+                    <TextBlock Text="GAME OVER"
+                               FontSize="36"
+                               FontWeight="Bold"
+                               Foreground="Red"
+                               HorizontalAlignment="Center"
+                               Margin="0,0,0,10"/>
+
                     <TextBlock x:Name="FinalScoreText"
                                Text="Pontszám: 0"
-                               FontSize="28"
+                               FontSize="24"
                                FontWeight="Bold"
                                Foreground="White"
                                HorizontalAlignment="Center"
@@ -116,12 +125,77 @@
                             Background="#FF4CAF50"
                             Foreground="White"
                             BorderThickness="0"
-                            Cursor="Hand"
                             Click="RestartButton_Click"/>
                 </StackPanel>
             </Border>
 
+            <!-- 🔙 VISSZA GOMB (LEGELÖL VAN!) -->
+            <Button x:Name="BackButton"
+                    Content="⟵ Vissza"
+                    FontSize="16"
+                    Padding="8,4"
+                    Background="#AA000000"
+                    Foreground="White"
+                    BorderThickness="0"
+                    Canvas.Left="10"
+                    Canvas.Top="10"
+                    Visibility="Collapsed"
+                    Click="BackButton_Click"/>
+
         </Canvas>
+
+        <!-- ================= MENÜ ================= -->
+        <Grid x:Name="MenuOverlay" Background="#FF0E1A25">
+
+            <!-- FŐMENÜ -->
+            <StackPanel x:Name="MainMenu"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Width="300">
+
+                <TextBlock Text="FLAPPY BIRD"
+                           FontSize="42"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,40"/>
+
+                <Button Content="PLAY"
+                        FontSize="22"
+                        Padding="14"
+                        Click="PlayButton_Click"/>
+            </StackPanel>
+
+            <!-- NEHÉZSÉG -->
+            <StackPanel x:Name="DifficultyMenu"
+                        Visibility="Collapsed"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Width="300">
+
+                <TextBlock Text="Select Difficulty"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="White"
+                           HorizontalAlignment="Center"
+                           Margin="0,0,0,25"/>
+
+                <Button Content="Easy"
+                        FontSize="18"
+                        Margin="0,0,0,10"
+                        Click="EasyButton_Click"/>
+
+                <Button Content="Medium"
+                        FontSize="18"
+                        Margin="0,0,0,10"
+                        IsEnabled="False"/>
+
+                <Button Content="Hard"
+                        FontSize="18"
+                        IsEnabled="False"/>
+            </StackPanel>
+
+        </Grid>
 
     </Grid>
 </Window>
