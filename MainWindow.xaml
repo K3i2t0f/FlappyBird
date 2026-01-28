@@ -92,6 +92,36 @@
                 </Rectangle.Fill>
             </Rectangle>
 
+            <!-- 🌧️ ESŐ (Medium módhoz) -->
+            <Rectangle x:Name="Rain1" Width="5" Height="40" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain2" Width="5" Height="45" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain3" Width="5" Height="35" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain4" Width="5" Height="50" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain5" Width="5" Height="42" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain6" Width="5" Height="38" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain7" Width="5" Height="48" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain8" Width="5" Height="44" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain9" Width="5" Height="36" Fill="#99CFFFFF" Visibility="Collapsed"/>
+            <Rectangle x:Name="Rain10" Width="5" Height="52" Fill="#99CFFFFF" Visibility="Collapsed"/>
+
+            <!-- 🌫️ KÖD FEDŐRÉTEG (Hard) -->
+            <Rectangle x:Name="FogOverlay"
+                       Width="800"
+                       Height="450"
+                       Canvas.Left="0"
+                       Canvas.Top="0"
+                       Visibility="Collapsed"
+                       IsHitTestVisible="False">
+                <Rectangle.Fill>
+                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                        <GradientStop Color="#CCFFFFFF" Offset="0"/>
+                        <GradientStop Color="#88FFFFFF" Offset="0.5"/>
+                        <GradientStop Color="#CCFFFFFF" Offset="1"/>
+                    </LinearGradientBrush>
+                </Rectangle.Fill>
+            </Rectangle>
+
+
             <!-- GAME OVER PANEL -->
             <Border x:Name="GameOverPanel"
                     Visibility="Collapsed"
@@ -188,11 +218,11 @@
                 <Button Content="Medium"
                         FontSize="18"
                         Margin="0,0,0,10"
-                        IsEnabled="False"/>
+                        Click="MediumButton_Click"/>
 
                 <Button Content="Hard"
                         FontSize="18"
-                        IsEnabled="False"/>
+                        Click="HardButton_Click"/>
             </StackPanel>
 
         </Grid>

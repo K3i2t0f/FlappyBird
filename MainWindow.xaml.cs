@@ -21,18 +21,26 @@ namespace FlappyBird
 
         double gravity = 1.5;
         double birdVelocity = 0;
-        double pipeSpeed = 4;
+
+        double easyPipeSpeed = 4;
+        double mediumPipeSpeed = 6;
+        double hardPipeSpeed = 8;
+        double pipeSpeed;
+
+        double normalJump = -10;
+        double heavyJump = -7;
+
+        bool mediumMode = false;
+        bool hardMode = false;
+        bool gameStarted = false;
+        bool isGameOver = false;
 
         Rectangle[] topPipes;
         Rectangle[] bottomPipes;
+        Rectangle[] rainDrops;
 
         bool[] pipeScored = new bool[3];
-
         Random rnd = new Random();
-
-        bool gameLoaded = false;
-        bool gameStarted = false;
-        bool isGameOver = false;
 
         int score = 0;
         const double PIPE_FULL_HEIGHT = 354;
@@ -43,6 +51,7 @@ namespace FlappyBird
 
             topPipes = new[] { PipeTop1, PipeTop2, PipeTop3 };
             bottomPipes = new[] { PipeBottom1, PipeBottom2, PipeBottom3 };
+            rainDrops = new[] { Rain1, Rain2, Rain3, Rain4, Rain5 };
 
             gameTimer.Interval = TimeSpan.FromMilliseconds(20);
             gameTimer.Tick += GameLoop;
@@ -56,23 +65,50 @@ namespace FlappyBird
 
         private void EasyButton_Click(object sender, RoutedEventArgs e)
         {
-            MenuOverlay.Visibility = Visibility.Collapsed;
-            BackButton.Visibility = Visibility.Visible;
-            StartEasyGame();
+            mediumMode = false;
+            hardMode = false;
+            pipeSpeed = easyPipeSpeed;
+            StartGame();
         }
 
-        private void StartEasyGame()
+        private void MediumButton_Click(object sender, RoutedEventArgs e)
         {
+            mediumMode = true;
+            hardMode = false;
+            pipeSpeed = mediumPipeSpeed;
+            StartGame();
+        }
+
+        private void HardButton_Click(object sender, RoutedEventArgs e)
+        {
+            mediumMode = true;
+            hardMode = true;
+            pipeSpeed = hardPipeSpeed;
+            StartGame();
+        }
+
+        private void StartGame()
+        {
+            MenuOverlay.Visibility = Visibility.Collapsed;
+            BackButton.Visibility = Visibility.Visible;
+
             ResetGame();
 
-            gameLoaded = true;
-            gameStarted = false;
-
-            ScoreText.Visibility = Visibility.Visible;
             Bird.Visibility = Visibility.Visible;
+            ScoreText.Visibility = Visibility.Visible;
 
             foreach (var p in topPipes) p.Visibility = Visibility.Visible;
             foreach (var p in bottomPipes) p.Visibility = Visibility.Visible;
+
+            foreach (var r in rainDrops)
+            {
+                r.Visibility = mediumMode ? Visibility.Visible : Visibility.Collapsed;
+                Canvas.SetTop(r, rnd.Next(-600, 0));
+                Canvas.SetLeft(r, rnd.Next(0, 800));
+            }
+
+            // 🌫️ KÖD: Hard módban mindig aktív
+            FogOverlay.Visibility = hardMode ? Visibility.Visible : Visibility.Collapsed;
 
             GameCanvas.Focus();
         }
@@ -80,15 +116,15 @@ namespace FlappyBird
         private void ResetGame()
         {
             gameTimer.Stop();
-            gameStarted = false;
-            isGameOver = false;
-
             birdVelocity = 0;
             score = 0;
             ScoreText.Text = "0";
+            gameStarted = false;
+            isGameOver = false;
 
             Canvas.SetTop(Bird, 217);
             GameOverPanel.Visibility = Visibility.Collapsed;
+            FogOverlay.Visibility = Visibility.Collapsed;
 
             for (int i = 0; i < 3; i++)
             {
@@ -111,11 +147,10 @@ namespace FlappyBird
                 Canvas.SetLeft(topPipes[i], Canvas.GetLeft(topPipes[i]) - pipeSpeed);
                 Canvas.SetLeft(bottomPipes[i], Canvas.GetLeft(bottomPipes[i]) - pipeSpeed);
 
-                if (Canvas.GetLeft(topPipes[i]) < -100)
+                if (Canvas.GetLeft(topPipes[i]) < -120)
                 {
-                    double maxX = 0;
-                    for (int j = 0; j < 3; j++)
-                        maxX = Math.Max(maxX, Canvas.GetLeft(topPipes[j]));
+                    double maxX = Math.Max(Canvas.GetLeft(topPipes[0]),
+                                 Math.Max(Canvas.GetLeft(topPipes[1]), Canvas.GetLeft(topPipes[2])));
 
                     Canvas.SetLeft(topPipes[i], maxX + 250);
                     Canvas.SetLeft(bottomPipes[i], maxX + 250);
@@ -124,8 +159,7 @@ namespace FlappyBird
                 }
 
                 if (!pipeScored[i] &&
-                    Canvas.GetLeft(topPipes[i]) + topPipes[i].Width <
-                    Canvas.GetLeft(Bird))
+                    Canvas.GetLeft(topPipes[i]) + topPipes[i].Width < Canvas.GetLeft(Bird))
                 {
                     score++;
                     ScoreText.Text = score.ToString();
@@ -136,23 +170,37 @@ namespace FlappyBird
                 CheckCollision(bottomPipes[i]);
             }
 
+            if (mediumMode)
+                UpdateRain();
+
             if (Canvas.GetTop(Bird) < 0 || Canvas.GetTop(Bird) + Bird.Height > 450)
                 GameOver();
         }
 
+        private void UpdateRain()
+        {
+            foreach (var r in rainDrops)
+            {
+                Canvas.SetTop(r, Canvas.GetTop(r) + 14);
+
+                if (Canvas.GetTop(r) > 450)
+                {
+                    Canvas.SetTop(r, rnd.Next(-400, 0));
+                    Canvas.SetLeft(r, rnd.Next(0, 800));
+                }
+            }
+        }
+
         private void ResetPipe(int index)
         {
-            int gap = rnd.Next(130, 180);
-            double gapCenterY = rnd.Next(170, 280);
-
-            double gapTop = gapCenterY - gap / 2;
-            double gapBottom = gapCenterY + gap / 2;
+            int gap = rnd.Next(120, 160);
+            double centerY = rnd.Next(160, 290);
 
             topPipes[index].Height = PIPE_FULL_HEIGHT;
-            Canvas.SetTop(topPipes[index], gapTop - PIPE_FULL_HEIGHT);
+            Canvas.SetTop(topPipes[index], centerY - gap / 2 - PIPE_FULL_HEIGHT);
 
-            bottomPipes[index].Height = 450 - gapBottom;
-            Canvas.SetTop(bottomPipes[index], gapBottom);
+            bottomPipes[index].Height = 450 - (centerY + gap / 2);
+            Canvas.SetTop(bottomPipes[index], centerY + gap / 2);
         }
 
         private void CheckCollision(Rectangle pipe)
@@ -173,20 +221,9 @@ namespace FlappyBird
                 GameOver();
         }
 
-        private void GameOver()
-        {
-            isGameOver = true;
-            gameStarted = false;
-            gameTimer.Stop();
-
-            FinalScoreText.Text = $"Pontszám: {score}";
-            GameOverPanel.Visibility = Visibility.Visible;
-        }
-
         private void Canvas_KeyDown(object sender, KeyEventArgs e)
         {
-            if (!gameLoaded || isGameOver) return;
-            if (e.Key != Key.Space) return;
+            if (isGameOver || e.Key != Key.Space) return;
 
             if (!gameStarted)
             {
@@ -194,18 +231,30 @@ namespace FlappyBird
                 gameTimer.Start();
             }
 
-            birdVelocity = -10;
+            birdVelocity = mediumMode ? heavyJump : normalJump;
+        }
+
+        private void GameOver()
+        {
+            isGameOver = true;
+            gameTimer.Stop();
+            FinalScoreText.Text = $"Pontszám: {score}";
+            GameOverPanel.Visibility = Visibility.Visible;
+        }
+
+        private void RestartButton_Click(object sender, RoutedEventArgs e)
+        {
+            StartGame();
         }
 
         private void BackButton_Click(object sender, RoutedEventArgs e)
         {
             gameTimer.Stop();
-            gameLoaded = false;
-            gameStarted = false;
-            isGameOver = false;
+
+            foreach (var r in rainDrops)
+                r.Visibility = Visibility.Collapsed;
 
             BackButton.Visibility = Visibility.Collapsed;
-
             ScoreText.Visibility = Visibility.Collapsed;
             Bird.Visibility = Visibility.Collapsed;
             GameOverPanel.Visibility = Visibility.Collapsed;
@@ -213,14 +262,11 @@ namespace FlappyBird
             foreach (var p in topPipes) p.Visibility = Visibility.Collapsed;
             foreach (var p in bottomPipes) p.Visibility = Visibility.Collapsed;
 
-            MenuOverlay.Visibility = Visibility.Visible;
-            MainMenu.Visibility = Visibility.Collapsed;
-            DifficultyMenu.Visibility = Visibility.Visible;
-        }
+            FogOverlay.Visibility = Visibility.Collapsed;
 
-        private void RestartButton_Click(object sender, RoutedEventArgs e)
-        {
-            ResetGame();
+            MenuOverlay.Visibility = Visibility.Visible;
+            MainMenu.Visibility = Visibility.Visible;
+            DifficultyMenu.Visibility = Visibility.Collapsed;
         }
     }
 }
